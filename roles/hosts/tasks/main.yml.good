@@ -1,0 +1,63 @@
+- set_fact:
+    device: "{{ servervars[inventory_hostname] }}"
+    bond0: "{{ servervars[inventory_hostname].bond0 }}"
+
+- name: Configure interfaces file
+  template:
+    src: ../templates/interfaces.j2
+    dest: /etc/network/interfaces
+
+- name: Apply host networking changes
+  shell: |
+    ifup eth1
+    ifup eth2
+    ifup bond0
+
+    route add -net 10.1.0.0 netmask 255.255.0.0 gw {{ bond0.gateway }} dev bond0
+    ip link set bond0 promisc on
+    ethtool -s eth1 speed 1000 duplex full autoneg off
+    ethtool -s eth2 speed 1000 duplex full autoneg off
+    ifdown eth1 && ifup eth1
+    ifdown eth2 && ifup eth2
+
+- name: Update sources.list for NetQ and RoH
+  shell: |
+
+    wget -O- https://apps3.cumulusnetworks.com/setup/cumulus-apps-deb.pubkey | apt-key add -
+
+    printf "deb [arch=amd64] https://apps3.cumulusnetworks.com/repos/deb xenial netq-latest\ndeb [arch=amd64] https://apps3.cumulusnetworks.com/repos/deb xenial roh-3\n" > /etc/apt/sources.list.d/cumulus-apps-deb-xenial.list
+
+- name: Update repositories cache and install NTP
+  apt:
+    name: ntp
+    update_cache: yes
+
+- name: Enable and start NTP
+  systemd:
+    name: ntp
+    state: started
+    enabled: yes
+
+- name: Install NetQ
+  apt:
+    name: cumulus-netq
+
+- name: Enable and start cumulus-netq
+  systemd:
+    name: netqd
+    state: restarted
+    enabled: yes
+
+- name: Restart rsyslog
+  systemd:
+    state: restarted
+    name: rsyslog
+
+
+- name: Enable NCLU CLI and configure NetQ
+  shell: |
+
+    source /etc/bash_completion
+
+    netq config add server 10.255.7.3
+    netq config restart agent

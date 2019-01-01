@@ -1,0 +1,30 @@
+{% set slack = netq[inventory_hostname].slack %}
+
+backend:
+  port: 6379
+  role: master
+  server: 127.0.0.1
+
+notifier-integrations:
+  - name: netq-bgp
+    type: slack
+    webhook: "{{ slack.bgp }}"
+    severity: INFO,
+    #tag: "@netqts-sys"
+
+  - name: netq-all
+    type: slack
+    webhook: "{{ slack.all }}"
+    severity: INFO,
+    #tag: "@netqts-sys"
+
+notifier-filters:
+- name: BGP Slack channel
+  output:
+  - netq-bgp
+  rule:
+    type: BgpSession
+- name: default
+  output:
+  - netq-all
+  rule:

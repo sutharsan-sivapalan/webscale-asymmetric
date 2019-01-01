@@ -1,0 +1,27 @@
+{% set device = hostvars[inventory_hostname] %}
+{% set bond0 =  hostvars[inventory_hostname].bond0 %}
+
+auto eth1
+iface eth1 inet manual
+    bond-master bond0
+
+auto eth2
+iface eth2 inet manual
+    bond-master bond0
+
+auto bond0
+iface bond0 inet static
+    address {{ bond0.ip }}
+    netmask 255.255.255.0
+    gateway {{ bond0.gateway }}
+    broadcast {{ bond0.broadcast }}
+    bond-miimon 100
+    bond-downdelay 200
+    bond-updelay 200
+    bond-mode 4
+    bond-slaves none
+    bond-lacp-rate 1
+    mtu 9216
+    up ip link set $IFACE promisc on
+    down ip link set $IFACE promisc off
+    up route add -net 10.1.0.0 netmask 255.255.0.0 gw {{ bond0.gateway }} dev bond0

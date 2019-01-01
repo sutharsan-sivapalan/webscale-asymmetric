@@ -1,0 +1,60 @@
+- set_fact:
+    device: "{{ swvars[inventory_hostname] }}"
+    mlag: "{{ swvars[inventory_hostname].mlag }}"
+    vlan: "{{ swvars[inventory_hostname].vlan }}"
+    vxlan: "{{ swvars[inventory_hostname].vxlan }}"
+
+- name: Set up CLAG
+  nclu:
+    template: |
+
+      {% if mlag.primary is defined %}
+      add clag peer sys-mac {{ mlag.sysmac }} interface {{ MLAGPL }} primary backup-ip {{ mlag.backupip }}
+      {% else %}
+      add clag peer sys-mac {{ mlag.sysmac }} interface {{ MLAGPL }} secondary backup-ip {{ mlag.backupip }}
+      {% endif %}
+
+      {% if mlag.hosts is defined %}
+      {% for x in mlag.hosts %}
+      add bond {{ x }} bond slaves {{ mlag.hosts[x].slaves }}
+      add bond {{ x }} bridge access {{ mlag.hosts[x].vlan }}
+      add bond {{ x }} clag id  {{ mlag.hosts[x].clagid }}
+      add bond {{ x }} mtu 9216
+      add bond {{ x }} stp bpduguard
+      add bond {{ x }} stp portadminedge
+      {% endfor %}
+      {% endif %}
+
+    atomic: true
+
+
+- name: Set up VXLAN
+  nclu:
+    template: |
+
+      {% if vxlan.vnis is defined %}
+      {% for x in vxlan.vnis %}
+      add vxlan {{ x }} vxlan id {{ vxlan.vnis[x].id }}
+      add vxlan {{ x }} vxlan local-tunnel {{ device.loopback|replace("/32", "") }}
+      add vxlan {{ x }} bridge access {{ vxlan.vnis[x].vlan }}
+      add vxlan {{ x }} bridge learning off
+      add vxlan {{ x }} bridge arp-nd-suppress on
+      {% endfor %}
+      {% endif %}
+
+      add loopback lo clag vxlan-anycast-ip {{ vxlan.anycastip|replace("/32", "") }}
+
+      {% if vxlan.vtep == 'yes' %}
+      add vlan 100 ip address-virtual 00:00:5E:00:01:01 10.1.100.1/24
+      add vlan 200 ip address-virtual 00:00:5E:00:01:02 10.1.200.1/24
+      add vlan 100 ip address {{ vlan.100 }}
+      add vlan 200 ip address {{ vlan.200 }}
+      {% endif %}
+
+    atomic: true
+
+
+- name: Restart CLAG
+  systemd:
+      state: restarted
+      name: clagd.service

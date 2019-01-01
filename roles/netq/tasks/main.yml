@@ -1,0 +1,20 @@
+- name: Configure NetQ-TS interfaces file
+  copy:
+    src: ../templates/interfaces
+    dest: /etc/network/interfaces
+
+- name: Apply host networking changes
+  shell: ifreload -a
+
+- name: Start NetQ agent on NetQ-TS
+  shell: netq config restart agent
+
+- name: Configure NetQ Notifier Service
+  template:
+    src: ../templates/netq.j2
+    dest: /etc/netq/netq.yml
+
+- name: Restart NetQ Notifier Service
+  systemd:
+    state: restarted
+    name: netq-notifier
