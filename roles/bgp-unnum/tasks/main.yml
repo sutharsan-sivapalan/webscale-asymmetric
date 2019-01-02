@@ -1,7 +1,7 @@
 - set_fact:
     device: "{{ swvars[inventory_hostname] }}"
     bgp: "{{ swvars[inventory_hostname].bgp }}"
-    vxlan: "{{ swvars[inventory_hostname].vxlan}}"
+    vxlan: "{{ swvars[inventory_hostname].vxlan }}"
 
 - name: Set up BGP unnumbered via template
   nclu:
