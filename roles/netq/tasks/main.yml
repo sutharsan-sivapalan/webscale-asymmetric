@@ -13,8 +13,10 @@
   template:
     src: ../templates/netq.j2
     dest: /etc/netq/netq.yml
+  when: not(slack.bgp is none and slack.all is none)
 
 - name: Restart NetQ Notifier Service
   systemd:
     state: restarted
     name: netq-notifier
+  when: not(slack.bgp is none and slack.all is none)
