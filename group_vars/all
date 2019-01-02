@@ -129,7 +129,7 @@ swvars:
 
     leaf2B:
         loopback: 44.44.44.44/32
-        ints: 'swp1-2,7-8,swp9s0'
+        ints: 'swp1-2,7-8,swp9s1-2'
         bgp:
             asn: 65044
             fabints: 'swp1-2'
