@@ -192,7 +192,7 @@ swvars:
         bgp:
             asn: 65066
             fabints: 'swp1-2'
-            otherints: 'swp3,swp9'
+            otherints: 'swp3'
         mlag:
             sysmac: 44:38:39:FF:40:03
             backupip: '55.55.55.55'
