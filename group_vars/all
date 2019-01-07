@@ -18,7 +18,7 @@ swvars:
         loopback: 2.2.2.2/32
         ints: 'swp1-6'
         bgp:
-            asn: 65002
+            asn: 65001
             fabints: 'swp1-6'
         vxlan:
             vtep: 'no'
@@ -62,7 +62,7 @@ swvars:
         loopback: 22.22.22.22/32
         ints: 'swp1-2,7-8,swp9s1-2'
         bgp:
-            asn: 65022
+            asn: 65011
             fabints: 'swp1-2'
         mlag:
             sysmac: 44:38:39:FF:40:01
@@ -96,7 +96,7 @@ swvars:
         loopback: 33.33.33.33/32
         ints: 'swp1-2,7-8,swp9s1-2'
         bgp:
-            asn: 65033
+            asn: 65022
             fabints: 'swp1-2'
         mlag:
             sysmac: 44:38:39:FF:40:02
@@ -131,7 +131,7 @@ swvars:
         loopback: 44.44.44.44/32
         ints: 'swp1-2,7-8,swp9s1-2'
         bgp:
-            asn: 65044
+            asn: 65022
             fabints: 'swp1-2'
         mlag:
             sysmac: 44:38:39:FF:40:02
@@ -165,7 +165,7 @@ swvars:
         loopback: 55.55.55.55/32
         ints: 'swp1-3,7-8'
         bgp:
-            asn: 65055
+            asn: 65033
             fabints: 'swp1-2'
             otherints: 'swp3'
         mlag:
@@ -190,7 +190,7 @@ swvars:
         loopback: 66.66.66.66/32
         ints: 'swp1-3,7-8'
         bgp:
-            asn: 65066
+            asn: 65033
             fabints: 'swp1-2'
             otherints: 'swp3'
         mlag:

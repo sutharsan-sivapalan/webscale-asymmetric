@@ -1,6 +1,7 @@
 - set_fact:
     device: "{{ swvars[inventory_hostname] }}"
     bgp: "{{ swvars[inventory_hostname].bgp }}"
+    mlag: "{{ swvars[inventory_hostname].mlag }}"
     vxlan: "{{ swvars[inventory_hostname].vxlan }}"
 
 - name: Set up BGP unnumbered via template
@@ -14,21 +15,31 @@
       add bgp neighbor fabric remote-as external
       add bgp neighbor fabric description Clos Fabric
       add bgp neighbor fabric capability extended-nexthop
+      
       {% if bgp.fabints is defined %}
       add bgp neighbor {{ bgp.fabints }} peer-group fabric
       {% endif %}
+      
       {% if bgp.otherints is defined %}
       add bgp neighbor {{ bgp.otherints }} interface remote-as external
       {% endif %}
+      
+      {% if mlag is defined %}
+      add bgp neighbor peerlink.4094 interface remote-as internal
+      add bgp l2vpn evpn neighbor peerlink.4094 activate
+      {% endif %}
+      
       {% if vxlan.anycastip is defined %}
       add bgp ipv4 unicast network {{ vxlan.anycastip }}
       {% endif %}
+      
       {% if vxlan.vtep is defined %}
       add bgp l2vpn evpn neighbor fabric activate
       {%	if vxlan.vtep == 'yes' %}
       add bgp l2vpn evpn advertise-all-vni
       {%	endif %}
       {% endif %}
+      
       add routing route-map LOOPBACK permit 10 match interface lo
       add bgp ipv4 unicast redistribute connected route-map LOOPBACK
     atomic: true
