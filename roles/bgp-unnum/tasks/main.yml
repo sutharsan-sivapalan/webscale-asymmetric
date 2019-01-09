@@ -1,7 +1,6 @@
 - set_fact:
     device: "{{ swvars[inventory_hostname] }}"
     bgp: "{{ swvars[inventory_hostname].bgp }}"
-    mlag: "{{ swvars[inventory_hostname].mlag }}"
     vxlan: "{{ swvars[inventory_hostname].vxlan }}"
 
 - name: Set up BGP unnumbered via template
@@ -22,11 +21,6 @@
       
       {% if bgp.otherints is defined %}
       add bgp neighbor {{ bgp.otherints }} interface remote-as external
-      {% endif %}
-      
-      {% if mlag is defined %}
-      add bgp neighbor peerlink.4094 interface remote-as internal
-      add bgp l2vpn evpn neighbor peerlink.4094 activate
       {% endif %}
       
       {% if vxlan.anycastip is defined %}
