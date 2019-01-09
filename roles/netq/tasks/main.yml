@@ -1,3 +1,6 @@
+- set_fact:
+    slack: "{{ netq[inventory_hostname].slack }}"
+
 - name: Configure NetQ-TS interfaces file
   copy:
     src: ../templates/interfaces
@@ -13,10 +16,10 @@
   template:
     src: ../templates/netq.j2
     dest: /etc/netq/netq.yml
-  when: not(slack.bgp is none and slack.all is none)
+  when: slack.bgp is defined
 
 - name: Restart NetQ Notifier Service
   systemd:
     state: restarted
     name: netq-notifier
-  when: not(slack.bgp is none and slack.all is none)
+  when: slack.bgp is defined

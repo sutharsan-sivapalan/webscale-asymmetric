@@ -246,7 +246,7 @@ servervars:
             ip: 10.1.200.204
             mask: 255.255.255.0
             gateway: 10.1.200.1
-            broadcast: 11.1.200.255
+            broadcast: 10.1.200.255
 
 # Please add Slack incoming WebHooks if they exist
 netq:
