@@ -14,9 +14,6 @@
       add clag peer sys-mac {{ mlag.sysmac }} interface {{ MLAGPL }} secondary backup-ip {{ mlag.backupip }}
       {% endif %}
 
-      add bgp neighbor peerlink.4094 interface remote-as internal
-      add bgp l2vpn evpn neighbor peerlink.4094 activate
-
       {% if mlag.hosts is defined %}
       {% for x in mlag.hosts %}
       add bond {{ x }} bond slaves {{ mlag.hosts[x].slaves }}
