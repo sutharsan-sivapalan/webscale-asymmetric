@@ -24,7 +24,7 @@
   copy:
     dest: "/etc/apt/sources.list.d/cumulus-apps-deb-xenial.list"
     content: |
-        deb [arch=amd64] https://apps3.cumulusnetworks.com/repos/deb xenial netq-latest
+        deb [arch=amd64] https://apps3.cumulusnetworks.com/repos/deb xenial netq-1.4
         deb [arch=amd64] https://apps3.cumulusnetworks.com/repos/deb xenial roh-3
 
 - name: Reference and update local apt repository
